@@ -6,6 +6,7 @@ class Bandit(object):
     def __init__(self, arms):
         self.arms = arms
         self._means = [random.randint(-10, 10) for _ in xrange(arms)]
+        self.expected_max_value = 0
 
     def _move_means(self):
         def move(n):
@@ -20,6 +21,7 @@ class Bandit(object):
 
     def get_arm_value(self, arm):
         self._move_means()
+        self.expected_max_value += max(self._means)
         return random.normalvariate(self._means[arm], 10)
 
 
@@ -38,4 +40,7 @@ def play_bandit(bandit):
 
 
 if __name__ == '__main__':
-    print sum(sum(play_bandit(Bandit(10))) for _ in xrange(1000)) / 1000.
+    b = Bandit(10)
+    s = sum(sum(play_bandit(b)) for _ in xrange(1000)) / 1000.
+    e = b.expected_max_value / 1000.
+    print s, e, s/e
